@@ -36,14 +36,17 @@ Route::get('auth/user', function() {
 
 });
 
-/* Route::get('/chat/{chat}/get_users', '\App\Http\Controllers\ChatController@get_users')->name('chat.get_users'); */
-Route::get('/chat/{chat}/get_users', [ChatController::class, 'get_users'])->name('chat.get_users');
+/* Route::get('chat', 'App\Http\Controllers\ChatController@show')->name('chat.show'); */
+Route::get('chat/{chat}', [ChatController::class, 'show'])->name('chat.show');
 
 /* Route::get('chat/with/{user}', 'App\Http\Controllers\ChatController@chat_with')->name('chat.with'); */
 Route::get('chat/with/{user}', [ChatController::class, 'chat_with'])->name('chat.with');
 
-/* Route::get('chat', 'App\Http\Controllers\ChatController@show')->name('chat.show'); */
-Route::get('chat/{chat}', [ChatController::class, 'show'])->name('chat.show');
+/* Route::get('/chat/{chat}/get_users', '\App\Http\Controllers\ChatController@get_users')->name('chat.get_users'); */
+Route::get('/chat/{chat}/get_users', [ChatController::class, 'get_users'])->name('chat.get_users');
+
+/* Route::get('/chat/{chat}/get_messages/', '\App\Http\Controllers\ChatController@get_messages')->name('chat.get_messages'); */
+Route::get('/chat/{chat}/get_messages', [ChatController::class, 'get_messages'])->name('chat.get_messages');
 
 /* Route::post('message/sent', '\App\Http\Controllers\MessageController@sent')->name('message.sent'); */
 Route::post('message/sent', [MessageController::class, 'sent'])->name('message.sent');

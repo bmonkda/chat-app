@@ -5,6 +5,8 @@ const msgerChat = get(".msger-chat");
 const chatWith = get(".chatWith");
 const chatStatus = get(".chatStatus");
 const typing = get(".typing");
+// para probar imagen
+const PERSON_IMG = "https://lh3.googleusercontent.com/ogw/ADea4I7wvTeIexb8Zf-roQ0bp8PwBmgVnOWRNprDWJuC=s83-c-mo";
 
 const chatId = window.location.pathname.substr(6);
 
@@ -26,7 +28,16 @@ window.onload = function () {
 
         if (results.length > 0)
           chatWith.innerHTML = results[0].name;
-          
+
+      });
+
+    })
+    .then(() => {
+
+      axios.get(`/chat/${chatId}/get_messages`).then(res => {
+
+        appendMessages(res.data.messages);
+
       });
 
     })
@@ -73,6 +84,28 @@ msgerForm.addEventListener("submit", event => {
 
 });
 
+function appendMessages(messages) {
+
+  console.log('messages =====>' + messages);
+
+  let side = 'left';
+
+  messages.forEach(message => {
+
+    side = (message.user_id == authUser.id) ? 'right' : 'left';
+
+    appendMessage(
+      message.user.name,
+      // PERSON_IMG,
+      message.user.profile_photo_url,
+      side,
+      message.content,
+      formatDate(new Date(message.created_at)))
+
+  });
+
+}
+
 /* function appendMessage(message, side) { */
 function appendMessage(name, img, side, text, date) {
   //   Simple solution for small apps
@@ -94,7 +127,10 @@ function appendMessage(name, img, side, text, date) {
   `;
 
   msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-  msgerChat.scrollTop += 500;
+
+  /* msgerChat.scrollTop += 500; */
+  scrollToBottom();
+
 }
 
 
@@ -122,6 +158,8 @@ function formatDate(date) {
   return `${d}/${mo}/${y} ${h.slice(-2)}:${m.slice(-2)}`;
 }
 
-/* function random(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-} */
+function scrollToBottom()
+{
+    msgerChat.scrollTop = msgerChat.scrollHeight;
+}
+
