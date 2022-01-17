@@ -2,13 +2,11 @@ const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");
 const msgerChat = get(".msger-chat");
 
-// const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
-// const PERSON_IMG = "https://lh3.googleusercontent.com/ogw/ADea4I7wvTeIexb8Zf-roQ0bp8PwBmgVnOWRNprDWJuC=s83-c-mo";
-
 const chatWith = get(".chatWith");
 const chatStatus = get(".chatStatus");
 const typing = get(".typing");
 
+const chatId = window.location.pathname.substr(6);
 
 
 msgerForm.addEventListener("submit", event => {
@@ -73,6 +71,16 @@ function appendMessage(name, img, side, text, date) {
   msgerChat.insertAdjacentHTML("beforeend", msgHTML);
   msgerChat.scrollTop += 500;
 }
+
+
+//Echo
+// Uniendo al canal a través de Laravel Echo y Pusher que hacen la comunicación a través del WebSocket
+Echo.join(`chat.${chatId}`).listen('MessageSent', (e) => {
+    
+  console.log(e);
+
+});
+
 
 // Utils
 function get(selector, root = document) {
