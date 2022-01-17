@@ -25,6 +25,18 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 
+Route::get('auth/user', function() {
+
+	if(auth()->check()) 
+		return response()->json([
+			'authUser' => auth()->user()
+		]);
+
+	return null;
+
+});
+
+
 /* Route::get('chat/with/{user}', 'App\Http\Controllers\ChatController@chat_with'); */
 Route::get('chat/with/{user}', [ChatController::class, 'chat_with'])->name('chat.with');
 

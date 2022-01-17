@@ -8,6 +8,15 @@ const typing = get(".typing");
 
 const chatId = window.location.pathname.substr(6);
 
+let authUser;
+
+window.onload = function () {
+
+  axios.get('/auth/user').then(res => {
+    authUser = res.data.authUser;
+  });
+
+}
 
 msgerForm.addEventListener("submit", event => {
   event.preventDefault();
@@ -76,7 +85,7 @@ function appendMessage(name, img, side, text, date) {
 //Echo
 // Uniendo al canal a través de Laravel Echo y Pusher que hacen la comunicación a través del WebSocket
 Echo.join(`chat.${chatId}`).listen('MessageSent', (e) => {
-    
+
   console.log(e);
 
 });
