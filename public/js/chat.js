@@ -12,11 +12,27 @@ let authUser;
 
 window.onload = function () {
 
-  axios.get('/auth/user').then(res => {
-    authUser = res.data.authUser;
-  });
+  axios.get('/auth/user')
+    .then(res => {
+
+      authUser = res.data.authUser;
+
+    })
+    .then(() => {
+
+      axios.get(`/chat/${chatId}/get_users`).then(res => {
+
+        let results = res.data.users.filter(user => user.id != authUser.id);
+
+        if (results.length > 0)
+          chatWith.innerHTML = results[0].name;
+          
+      });
+
+    })
 
 }
+
 
 msgerForm.addEventListener("submit", event => {
   event.preventDefault();

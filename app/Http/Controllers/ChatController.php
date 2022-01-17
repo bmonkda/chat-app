@@ -54,4 +54,14 @@ class ChatController extends Controller
 		// Redireccionamos al usuario a la ruta chat.show
 		return redirect()->route('chat.show', $chat);
 	}
+
+	public function get_users (Chat $chat)
+	{
+		$users = $chat->users;
+
+		return response()->json([
+			'users' => $users
+		]);
+	}
+
 }
