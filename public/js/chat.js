@@ -12,6 +12,9 @@ const chatId = window.location.pathname.substr(6);
 
 let authUser;
 
+let typingTimer = false;
+
+
 window.onload = function () {
 
   axios.get('/auth/user').then(res => {
@@ -68,14 +71,30 @@ window.onload = function () {
 
               if (user.id != authUser.id)
                 chatStatus.className = 'chatStatus offline';
+            })
+            .listenForWhisper('typing', (e) => {
+              /* console.log(e); */
+              if (e > 0)
+                typing.style.display = '';
+
+              if (typingTimer) {
+                clearTimeout(typingTimer);
+              }
+
+              typingTimer = setTimeout(() => {
+
+                typing.style.display = 'none';
+                
+                typingTimer = false;
+
+              }, 3000);
+
             });
 
         });
 
     });
-
 }
-
 
 msgerForm.addEventListener("submit", event => {
   event.preventDefault();
@@ -88,7 +107,7 @@ msgerForm.addEventListener("submit", event => {
 
   axios.post('/message/sent', {
     message: msgText,
-    chat_id: 1 //PENDIENTE: HACER DINAMICO
+    chat_id: chatId //PENDIENTE: HACER DINAMICO
   }).then(res => {
 
     let data = res.data;
@@ -166,11 +185,14 @@ function appendMessage(name, img, side, text, date) {
 
 }
 
-
 //Echo
 // Uniendo al canal a través de Laravel Echo y Pusher que hacen la comunicación a través del WebSocket
 // Laravel Echo fue movido y concatenado después de todos los métodos de window.onload 
 
+function sendTypingEvent() {
+  typingTimer = true;
+  Echo.join(`chat.${chatId}`).whisper('typing', msgerInput.value.length);
+}
 
 // Utils
 function get(selector, root = document) {
