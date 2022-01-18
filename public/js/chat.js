@@ -107,7 +107,7 @@ msgerForm.addEventListener("submit", event => {
 
   axios.post('/message/sent', {
     message: msgText,
-    chat_id: chatId //PENDIENTE: HACER DINAMICO
+    chat_id: chatId 
   }).then(res => {
 
     let data = res.data;
