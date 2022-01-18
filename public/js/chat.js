@@ -14,12 +14,11 @@ let authUser;
 
 window.onload = function () {
 
-  axios.get('/auth/user')
-    .then(res => {
+  axios.get('/auth/user').then(res => {
 
-      authUser = res.data.authUser;
+    authUser = res.data.authUser;
 
-    })
+  })
     .then(() => {
 
       axios.get(`/chat/${chatId}/get_users`).then(res => {
@@ -28,19 +27,52 @@ window.onload = function () {
 
         if (results.length > 0)
           chatWith.innerHTML = results[0].name;
+      })
+        .then(() => {
 
-      });
+          axios.get(`/chat/${chatId}/get_messages`).then(res => {
 
-    })
-    .then(() => {
+            appendMessages(res.data.messages);
 
-      axios.get(`/chat/${chatId}/get_messages`).then(res => {
+          })
+          // concatenando laravel Echo
+        }).then(() => {
 
-        appendMessages(res.data.messages);
+          Echo.join(`chat.${chatId}`)
+            .listen('MessageSent', (e) => {
+              // console.log(e);
+              appendMessage(
+                e.message.user.name,
+                // PERSON_IMG,
+                e.message.user.profile_photo_url,
+                'left',
+                e.message.content,
+                formatDate(new Date(e.message.created_at))
+              );
+            })
+            .here((users) => {
 
-      });
+              let result = users.filter(user => user.id != authUser.id);
 
-    })
+              if (result.length > 0)
+                chatStatus.className = 'chatStatus online';
+
+            })
+            .joining((user) => {
+
+              if (user.id != authUser.id)
+                chatStatus.className = 'chatStatus online';
+
+            })
+            .leaving((user) => {
+
+              if (user.id != authUser.id)
+                chatStatus.className = 'chatStatus offline';
+            });
+
+        });
+
+    });
 
 }
 
@@ -86,7 +118,7 @@ msgerForm.addEventListener("submit", event => {
 
 function appendMessages(messages) {
 
-  console.log('messages =====>' + messages);
+  /* console.log('messages =====>' + messages); */
 
   let side = 'left';
 
@@ -100,7 +132,8 @@ function appendMessages(messages) {
       message.user.profile_photo_url,
       side,
       message.content,
-      formatDate(new Date(message.created_at)))
+      formatDate(new Date(message.created_at))
+    );
 
   });
 
@@ -136,11 +169,7 @@ function appendMessage(name, img, side, text, date) {
 
 //Echo
 // Uniendo al canal a través de Laravel Echo y Pusher que hacen la comunicación a través del WebSocket
-Echo.join(`chat.${chatId}`).listen('MessageSent', (e) => {
-
-  console.log(e);
-
-});
+// Laravel Echo fue movido y concatenado después de todos los métodos de window.onload 
 
 
 // Utils
@@ -158,8 +187,7 @@ function formatDate(date) {
   return `${d}/${mo}/${y} ${h.slice(-2)}:${m.slice(-2)}`;
 }
 
-function scrollToBottom()
-{
-    msgerChat.scrollTop = msgerChat.scrollHeight;
+function scrollToBottom() {
+  msgerChat.scrollTop = msgerChat.scrollHeight;
 }
 
